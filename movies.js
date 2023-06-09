@@ -1,55 +1,56 @@
+let totalCosts = [];
 
-let totalCosts = []
+let form = document.getElementById("movie-form");
 
-const form = document.getElementById('movie-form');
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
 
-form.addEventListener('submit', function(event){
+  // ----------------------------------------------
+  // add an entry
+  let row = document.createElement("tr");
+  let title = document.querySelector("input[name=title]").value;
+  let cost = document.querySelector("input[name=cost]").value;
 
-    event.preventDefault();
-
-    //-------------------------------------------
-    // add an entry
-
-    let title = document.querySelector('input[name=title]').value;
-    let cost = document.querySelector('input[name=cost]').value;
-
-    let row = document.createElement('tr');
-    row.innerHTML = `<tr><td>${title}</td><td>${cost}</td>
-    <td><button class="btn btn-danger">Remove</button></td></tr>`;
-
-    let table = document.getElementById('movies');
-    table.append(row);
-
-    totalCosts.push({title, cost});
-    // console.log(totalCosts)
-
-    //-------------------------------------------
-    // remove an entry
-
-    let remove = row.querySelector('button');
-    remove.addEventListener('click', function(e){
-        e.preventDefault();
-        // console.log(this.parentNode.parentNode)
-        this.parentNode.parentNode.remove();
-
-        const title = row.cells[0].innerHTML;
-        totalCosts = totalCosts.filter(movie => movie.title != title);
-
-        updateCost();
-    });
-
-
-    updateCost();
-
-});
-
-
-function updateCost(){
-    let total = 0;
-    for(let item of totalCosts){
-        total += Number(item.cost);
+  try {
+    let exists = totalCosts.find((movie) => movie.title == title);
+    if (exists) {
+      throw new Error("Movie already exists...");
     }
 
-    let span = document.getElementById('total-cost');
-    span.innerHTML = total;
+    row.innerHTML = `<tr><td>${title}</td><td>${cost}</td>
+                  <td><button class="btn btn-danger">Remove</button></tr>`;
+    const table = document.getElementById("movies");
+    table.append(row);
+
+    // add an entry to your 'model'
+    totalCosts.push({ title, cost });
+
+    // ---------------------------------------------
+    // remove an entry
+
+    let remove = row.querySelector("button");
+    remove.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const title = row.cells[0].innerHTML;
+      this.parentNode.parentNode.remove();
+
+      totalCosts = totalCosts.filter((movie) => movie.title != title);
+
+      updateTotal();
+    });
+
+    updateTotal();
+  } catch (e) {
+    alert(e.message);
+  }
+});
+
+function updateTotal() {
+  let total = 0;
+  for (let item of totalCosts) {
+    total += Number(item.cost);
+  }
+  let span = document.getElementById("total-cost");
+  span.innerHTML = total;
 }
